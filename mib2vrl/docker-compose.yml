@@ -1,7 +1,7 @@
 services:
 
   # ─────────────────────────────────────────────
-  # 1. CONVERTER — генерирует VRL + vector.yaml
+  # 1. CONVERTER — generates VRL + vector.yaml
   # ─────────────────────────────────────────────
   mib2vrl:
     build:
@@ -9,18 +9,18 @@ services:
       dockerfile: Dockerfile
     image: mib2vrl:latest
     volumes:
-      - ./mibs:/app/mibs:ro          # MIB файлы (read-only)
-      - ./out:/app/out               # сгенерированные конфиги
+      - ./mibs:/app/mibs:ro          # MIB files (read-only)
+      - ./out:/app/out               
     command: >
       convert
       --mibs /app/mibs
       --output /app/out
       --format both
     profiles:
-      - convert                      # запускается только через: docker compose --profile convert up
+      - convert                      
 
   # ─────────────────────────────────────────────
-  # 2. VECTOR — принимает трапы и обрабатывает
+  # 2. VECTOR — receives and aggregates traps
   # ─────────────────────────────────────────────
   vector:
     image: timberio/vector:latest-alpine
@@ -28,7 +28,7 @@ services:
       mib2vrl-init:
         condition: service_completed_successfully
     volumes:
-      - ./out:/etc/vector          # монтируем всю папку, не отдельные файлы
+      - ./out:/etc/vector          # mounting directory
     ports:
       - "514:514/udp"
       - "8686:8686"
@@ -43,8 +43,8 @@ services:
       - run
 
   # ─────────────────────────────────────────────
-  # 3. INIT — конвертер как one-shot сервис
-  #    завершается до старта vector
+  # 3. INIT — converter one-shot service
+  #    ends before vector starts
   # ─────────────────────────────────────────────
   mib2vrl-init:
     build:
@@ -60,10 +60,10 @@ services:
       --output /app/out
       --format both
     profiles:
-      - run                          # входит в профиль run
+      - run                          
 
   # ─────────────────────────────────────────────
-  # 4. TESTER — отправляет тестовые трапы
+  # 4. TESTER — sends test traps
   # ─────────────────────────────────────────────
   trap-sender:
     image: alpine:latest
