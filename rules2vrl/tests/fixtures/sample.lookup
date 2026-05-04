@@ -1,0 +1,20 @@
+# Sample .lookup file for rules2vrl testing
+
+table if_oper_status = {
+    "1" : "up",
+    "2" : "down",
+    "3" : "testing",
+    "4" : "unknown",
+    "5" : "dormant",
+    "6" : "notPresent",
+    "7" : "lowerLayerDown",
+}
+default = "unknown"
+
+table severity_map = {
+    {"linkDown", "4"},
+    {"linkUp", "1"},
+    {"coldStart", "2"},
+    {"warmStart", "3"},
+}
+default = "3"

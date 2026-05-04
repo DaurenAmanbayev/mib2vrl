@@ -1,0 +1,28 @@
+# Never publish
+mib2vrl/mibs/*.txt
+mib2vrl/mibs/*.mib
+mib2vrl/mibs/*.my
+
+# Generated output
+mib2vrl/out/
+rules2vrl/out/
+out/
+
+# User data
+rules/
+rules2vrl/.venv/
+mibs/*.my
+mibs/*.mib
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+dist/
+build/
+
+# OS
+.DS_Store
+.claude/

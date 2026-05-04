@@ -1,0 +1,12 @@
+# VENV
+.venv/
+
+# Prompts
+INSPECTION.md
+fix-suggestion.md
+
+# Python cache
+**/__pycache__/
+
+# Python test cache
+.pytest_cache/

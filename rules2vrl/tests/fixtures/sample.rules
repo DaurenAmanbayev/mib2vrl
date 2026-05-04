@@ -1,0 +1,81 @@
+##############################################################################
+# Sample Netcool probe rules for rules2vrl testing
+##############################################################################
+
+include "$OMNIHOME/probes/solaris2/include/snmptrap.rules"
+
+if(match(@Manager, "SNMP")) {
+
+    ######################################################################
+    # linkDown
+    ######################################################################
+
+    if(match(@Identifier, "snmpTraps 3")) {
+
+        @AlertGroup  = "IF-MIB"
+        @AlertKey    = "linkDown"
+        @Summary     = "linkDown: A linkDown trap signifies that the SNMP entity detected a link failure"
+        @Severity    = 3
+        @Class       = 30
+
+        # Varbind assignments
+        $ifIndex = $1
+        $ifAdminStatus = $2
+        $ifOperStatus = $3
+
+    }
+
+    ######################################################################
+    # linkUp
+    ######################################################################
+
+    if(match(@Identifier, "snmpTraps 4")) {
+
+        @AlertGroup  = "IF-MIB"
+        @AlertKey    = "linkUp"
+        @Summary     = "linkUp: A linkUp trap signifies that the SNMP entity detected a link recovery"
+        @Severity    = 1
+        @Class       = 30
+
+        $ifIndex = $1
+        $ifAdminStatus = $2
+        $ifOperStatus = $3
+
+    }
+
+    ######################################################################
+    # Multi-alternative match
+    ######################################################################
+
+    if(match(@AlertKey, "linkDown|linkUp")) {
+        @AlertGroup = "IF-MIB"
+    }
+
+    ######################################################################
+    # Regex match
+    ######################################################################
+
+    if(match(@Summary, regex(".*[Dd]own.*"))) {
+        @Severity = 4
+    }
+
+    ######################################################################
+    # Nested if with else
+    ######################################################################
+
+    if(@SpecificTrap == 1) {
+        @Severity = 2
+        @AlertGroup = "SNMP-Specific"
+    } else {
+        @Severity = 3
+    }
+
+    ######################################################################
+    # String concatenation
+    ######################################################################
+
+    if(match(@Identifier, "snmpTraps 3")) {
+        @Summary = "Node " + @Node + " interface " + $ifIndex + " is down"
+    }
+
+}

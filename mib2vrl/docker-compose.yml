@@ -1,0 +1,100 @@
+services:
+
+  # ─────────────────────────────────────────────
+  # 1. CONVERTER — генерирует VRL + vector.yaml
+  # ─────────────────────────────────────────────
+  mib2vrl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mib2vrl:latest
+    volumes:
+      - ./mibs:/app/mibs:ro          # MIB файлы (read-only)
+      - ./out:/app/out               # сгенерированные конфиги
+    command: >
+      convert
+      --mibs /app/mibs
+      --output /app/out
+      --format both
+    profiles:
+      - convert                      # запускается только через: docker compose --profile convert up
+
+  # ─────────────────────────────────────────────
+  # 2. VECTOR — принимает трапы и обрабатывает
+  # ─────────────────────────────────────────────
+  vector:
+    image: timberio/vector:latest-alpine
+    depends_on:
+      mib2vrl-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./out:/etc/vector          # монтируем всю папку, не отдельные файлы
+    ports:
+      - "514:514/udp"
+      - "8686:8686"
+    command: ["--config", "/etc/vector/vector.yaml"]
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8686 2>/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    profiles:
+      - run
+
+  # ─────────────────────────────────────────────
+  # 3. INIT — конвертер как one-shot сервис
+  #    завершается до старта vector
+  # ─────────────────────────────────────────────
+  mib2vrl-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mib2vrl:latest
+    volumes:
+      - ./mibs:/app/mibs:ro
+      - ./out:/app/out
+    command: >
+      convert
+      --mibs /app/mibs
+      --output /app/out
+      --format both
+    profiles:
+      - run                          # входит в профиль run
+
+  # ─────────────────────────────────────────────
+  # 4. TESTER — отправляет тестовые трапы
+  # ─────────────────────────────────────────────
+  trap-sender:
+    image: alpine:latest
+    depends_on:
+      vector:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "=== mib2vrl end-to-end test ==="
+
+        echo "--- Test 1: linkDown (generic SNMPv1, numeric OID) ---"
+        echo '{"snmp_trap_oid":"1.3.6.1.6.3.1.1.5.3","host":"192.168.1.1","varbinds":["1","up","down"]}' \
+          | nc -u -w1 vector 514
+        sleep 1
+
+        echo "--- Test 2: linkUp (generic SNMPv1, text OID) ---"
+        echo '{"snmp_trap_oid":"snmpTraps 4","host":"10.0.0.1","varbinds":["2","down","up"]}' \
+          | nc -u -w1 vector 514
+        sleep 1
+
+        echo "--- Test 3: ciscoEnvMonTemperatureNotification (SNMPv2 specific) ---"
+        echo '{"snmp_trap_oid":"ciscoEnvMonMIBNotifications 3","host":"10.0.0.254","varbinds":["Chassis","85","overTemperature","86"]}' \
+          | nc -u -w1 vector 514
+        sleep 1
+
+        echo "--- Test 4: unknown OID (passthrough, no enrichment expected) ---"
+        echo '{"snmp_trap_oid":"1.2.3.4.5.6","host":"172.16.0.1","varbinds":[]}' \
+          | nc -u -w1 vector 514
+        sleep 1
+
+        echo "=== All test traps sent. Check vector logs above. ==="
+    profiles:
+      - run
