@@ -87,8 +87,8 @@ into equivalent VRL transforms. Preserves years of accumulated operator business
 ### Docker (recommended)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mibmanager
-cd mibmanager
+git clone https://github.com/YOUR_USERNAME/mib2vrl
+cd mib2vrl
 
 # Add your MIB files
 cp /path/to/IF-MIB.txt       mib2vrl/mibs/
@@ -247,7 +247,7 @@ cd rules2vrl && pytest tests/ -v   # 304 tests
 ## Project structure
 
 ```
-mibmanager/
+mib2vrl/
 ├── mib2vrl/                    MIB → VRL converter (154 tests)
 │   ├── mib2vrl/
 │   │   ├── parser/             ASN.1 MIB parser (9-stage pipeline)
