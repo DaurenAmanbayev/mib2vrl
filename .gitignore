@@ -26,3 +26,10 @@ build/
 # OS
 .DS_Store
 .claude/
+
+# Claude Code settings
+.claude/
+settings.local.json
+
+# no gitattributes for subfolders
+mib2vrl/.gitattributes
