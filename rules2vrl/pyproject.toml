@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rules2vrl"
-version = "0.1.0"
+version = "1.0.0"
 description = "Convert Netcool probe rules files into Vector.dev VRL transforms"
 requires-python = ">=3.10"
 dependencies = [
