@@ -8,12 +8,12 @@ Convert SNMP MIB definitions and network probe rules into
 This project closes [vectordotdev/vector#4567](https://github.com/vectordotdev/vector/issues/4567) —
 the long-standing community request for native SNMP trap support in Vector.dev.
 
-[![Tests](https://img.shields.io/badge/tests-458%20passing-brightgreen)]()
-[![MIBs](https://img.shields.io/badge/MIBs%20tested-2456-blue)]()
-[![Traps](https://img.shields.io/badge/traps%20parsed-24642-blue)]()
-[![Vendors](https://img.shields.io/badge/vendors-100%2B-orange)]()
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Tests](https://github.com/DaurenAmanbayev/mib2vrl/actions/workflows/tests.yml/badge.svg)](https://github.com/DaurenAmanbayev/mib2vrl/actions/workflows/tests.yml)
+![MIBs](https://img.shields.io/badge/MIBs%20tested-2456-blue)
+![Traps](https://img.shields.io/badge/traps%20parsed-24642-blue)
+![Vendors](https://img.shields.io/badge/vendors-100%2B-orange)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
@@ -87,7 +87,7 @@ into equivalent VRL transforms. Preserves years of accumulated operator business
 ### Docker (recommended)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mib2vrl
+git clone https://github.com/DaurenAmanbayev/mib2vrl
 cd mib2vrl
 
 # Add your MIB files

@@ -23,6 +23,12 @@ __pycache__/
 dist/
 build/
 
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
 # OS
 .DS_Store
 .claude/
